@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mohd Ameen — Responsive Hero Page</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@300;400;500;700&family=Space+Mono:wght@400&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --bg:     #05080f;
+      --bg2:    #0a0f1a;
+      --surface:#0f1724;
+      --border: rgba(255,255,255,0.07);
+      --sky:    #4fc3f7;
+      --amber:  #ffab40;
+      --white:  #e8eef8;
+      --muted:  #5a6a85;
+      --font-h: 'Bebas Neue', sans-serif;
+      --font-b: 'Manrope', sans-serif;
+      --font-m: 'Space Mono', monospace;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--white);font-family:var(--font-b);font-weight:300;overflow-x:hidden;min-height:100vh}
+
+    /* Starfield grid */
+    body::before{
+      content:'';position:fixed;inset:0;
+      background-image:
+        radial-gradient(circle, rgba(79,195,247,0.04) 1px, transparent 1px),
+        radial-gradient(circle, rgba(255,171,64,0.03) 1px, transparent 1px);
+      background-size:50px 50px, 80px 80px;
+      background-position:0 0, 25px 25px;
+      pointer-events:none;z-index:0;
+    }
+
+    /* Glow orbs */
+    .orb1{position:fixed;top:-150px;left:-150px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(79,195,247,0.06),transparent 70%);pointer-events:none;z-index:0}
+    .orb2{position:fixed;bottom:-150px;right:-150px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(255,171,64,0.05),transparent 70%);pointer-events:none;z-index:0}
+
+    /* ── NAVBAR ── display:flex, justify-content:space-between */
+    nav{
+      display:flex;                      /* FLEXBOX */
+      justify-content:space-between;    /* brand left, links right */
+      align-items:center;
+      padding:1.25rem 2.5rem;
+      border-bottom:1px solid var(--border);
+      position:sticky;top:0;z-index:100;
+      background:rgba(5,8,15,0.85);
+      backdrop-filter:blur(18px);
+    }
+    .nav-brand{font-family:var(--font-m);font-size:0.72rem;letter-spacing:0.15em;color:var(--sky);text-transform:uppercase}
+
+    /* Nav links — FLEXBOX horizontal row */
+    .nav-links{
+      display:flex;          /* FLEXBOX */
+      align-items:center;
+      gap:2rem;
+      list-style:none;
+    }
+    .nav-links a{font-family:var(--font-m);font-size:0.68rem;letter-spacing:0.08em;color:var(--muted);text-decoration:none;text-transform:uppercase;transition:color 0.2s}
+    .nav-links a:hover{color:var(--white)}
+    .nav-cta{font-family:var(--font-m);font-size:0.68rem;letter-spacing:0.1em;padding:0.4rem 1rem;border:1px solid var(--sky);border-radius:3px;color:var(--sky)!important;text-decoration:none;text-transform:uppercase;transition:all 0.2s!important}
+    .nav-cta:hover{background:var(--sky)!important;color:var(--bg)!important}
+
+    /* Hamburger — mobile */
+    .nav-toggle{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px}
+    .nav-toggle span{display:block;width:22px;height:2px;background:var(--white);border-radius:2px;transition:all 0.3s}
+
+    /* ── HERO ── display:flex, flex-direction:row → column on mobile */
+    .hero{
+      display:flex;                     /* FLEXBOX */
+      flex-direction:row;               /* side by side on desktop */
+      align-items:center;
+      justify-content:space-between;
+      gap:4rem;
+      min-height:calc(100vh - 65px);
+      padding:5rem 2.5rem;
+      max-width:1200px;
+      margin:0 auto;
+      position:relative;z-index:1;
+    }
+
+    /* Hero left — display:flex, flex-direction:column */
+    .hero-content{
+      display:flex;                  /* FLEXBOX */
+      flex-direction:column;         /* stack text vertically */
+      align-items:flex-start;
+      gap:1.5rem;
+      flex:1;
+      max-width:560px;
+      animation:heroIn 0.9s ease both;
+    }
+
+    .badge{
+      display:inline-flex;           /* FLEXBOX inline */
+      align-items:center;
+      gap:0.5rem;
+      font-family:var(--font-m);font-size:0.65rem;letter-spacing:0.14em;text-transform:uppercase;
+      color:var(--sky);border:1px solid rgba(79,195,247,0.3);
+      background:rgba(79,195,247,0.05);padding:0.3rem 0.85rem;border-radius:100px;
+    }
+    .badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--sky);animation:pulse 2s ease infinite}
+
+    .hero-title{
+      font-family:var(--font-h);
+      font-size:clamp(3.5rem,9vw,7rem);
+      line-height:0.95;
+      letter-spacing:0.04em;
+      color:var(--white);
+    }
+    .hero-title .outline{
+      -webkit-text-stroke:1px rgba(255,255,255,0.25);
+      color:transparent;
+      display:block;
+    }
+    .hero-title .sky{color:var(--sky)}
+
+    .hero-desc{font-size:0.95rem;color:var(--muted);line-height:1.8;max-width:460px}
+
+    /* Button row — FLEXBOX row */
+    .hero-btns{
+      display:flex;                 /* FLEXBOX */
+      flex-direction:row;
+      align-items:center;
+      flex-wrap:wrap;               /* wrap on small screens */
+      gap:1rem;
+    }
+    .btn-p{display:inline-flex;align-items:center;gap:0.5rem;padding:0.85rem 2rem;background:var(--sky);color:var(--bg);font-family:var(--font-m);font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;border-radius:4px;border:none;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s}
+    .btn-p:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(79,195,247,0.25)}
+    .btn-s{display:inline-flex;align-items:center;gap:0.5rem;padding:0.85rem 2rem;background:transparent;color:var(--white);font-family:var(--font-m);font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;border:1px solid var(--border);border-radius:4px;cursor:pointer;transition:border-color 0.2s,transform 0.2s}
+    .btn-s:hover{border-color:rgba(255,255,255,0.3);transform:translateY(-2px)}
+
+    /* Stats row — FLEXBOX */
+    .stats{
+      display:flex;                 /* FLEXBOX */
+      flex-direction:row;
+      align-items:center;
+      gap:2rem;
+      padding-top:1rem;
+      border-top:1px solid var(--border);
+      width:100%;
+    }
+    .stat{display:flex;flex-direction:column;gap:0.2rem}
+    .stat-n{font-family:var(--font-h);font-size:1.8rem;color:var(--white);line-height:1}
+    .stat-n span{color:var(--sky)}
+    .stat-l{font-family:var(--font-m);font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted)}
+    .stat-div{width:1px;height:36px;background:var(--border)}
+
+    /* Hero visual — card */
+    .hero-visual{
+      flex:0 0 auto;
+      width:350px;
+      animation:heroIn 0.9s 0.2s ease both;
+    }
+    .vis-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;position:relative}
+    .vis-card::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(79,195,247,0.1),transparent 70%);pointer-events:none}
+
+    /* Card header — FLEXBOX */
+    .vc-header{
+      display:flex;                 /* FLEXBOX */
+      align-items:center;justify-content:space-between;
+      padding:0.85rem 1.25rem;border-bottom:1px solid var(--border);
+    }
+    .vc-dots{display:flex;gap:5px}
+    .vc-dots span{width:9px;height:9px;border-radius:50%}
+    .vc-dots span:nth-child(1){background:#ff5f57}
+    .vc-dots span:nth-child(2){background:#febc2e}
+    .vc-dots span:nth-child(3){background:#28c840}
+    .vc-label{font-family:var(--font-m);font-size:0.62rem;color:var(--muted)}
+
+    .vc-body{padding:1.5rem 1.25rem}
+
+    /* Identity row — FLEXBOX */
+    .vc-id{
+      display:flex;align-items:center;gap:0.9rem;
+      margin-bottom:1.25rem;
+    }
+    .vc-av{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,rgba(79,195,247,0.2),rgba(255,171,64,0.2));border:2px solid rgba(79,195,247,0.4);display:flex;align-items:center;justify-content:center;font-family:var(--font-h);font-size:1.2rem;color:var(--sky);flex-shrink:0}
+    .vc-name{font-family:var(--font-h);font-size:1rem;letter-spacing:0.06em;color:var(--white)}
+    .vc-role{font-family:var(--font-m);font-size:0.62rem;color:var(--muted);margin-top:2px}
+
+    /* Skill pills — FLEXBOX wrap */
+    .vc-pills{display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:1.1rem}
+    .pill{font-family:var(--font-m);font-size:0.6rem;padding:0.2rem 0.6rem;border-radius:100px;letter-spacing:0.04em}
+    .pill.sky{background:rgba(79,195,247,0.1);color:var(--sky);border:1px solid rgba(79,195,247,0.2)}
+    .pill.amb{background:rgba(255,171,64,0.1);color:var(--amber);border:1px solid rgba(255,171,64,0.2)}
+
+    .vc-fact{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:0.85rem 1rem;font-family:var(--font-m);font-size:0.7rem;line-height:1.8;color:var(--muted)}
+    .vc-fact .c-sky{color:var(--sky)}
+    .vc-fact .c-amb{color:var(--amber)}
+    .vc-fact .c-w{color:var(--white)}
+
+    /* Status row */
+    .vc-status{display:flex;align-items:center;gap:0.5rem;margin-top:1rem;font-family:var(--font-m);font-size:0.62rem;color:var(--muted)}
+    .s-dot{width:6px;height:6px;border-radius:50%;background:var(--sky);animation:pulse 2s ease infinite}
+
+    /* ── FEATURES ── FLEXBOX equal columns */
+    .features{
+      display:flex;             /* FLEXBOX */
+      flex-direction:row;
+      align-items:stretch;
+      max-width:1200px;margin:0 auto;
+      border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+      position:relative;z-index:1;
+    }
+    .feat{
+      display:flex;             /* FLEXBOX */
+      flex-direction:column;    /* stack vertically inside */
+      align-items:flex-start;
+      gap:0.6rem;
+      flex:1;                   /* equal width */
+      padding:2rem 2.5rem;
+      border-right:1px solid var(--border);
+      transition:background 0.2s;
+    }
+    .feat:last-child{border-right:none}
+    .feat:hover{background:rgba(255,255,255,0.02)}
+    .feat-icon{font-size:1.4rem}
+    .feat-title{font-family:var(--font-h);font-size:1rem;letter-spacing:0.06em;color:var(--white)}
+    .feat-desc{font-size:0.8rem;color:var(--muted);line-height:1.6}
+
+    /* ── TECH STRIP ── FLEXBOX wrap */
+    .tech-strip{
+      display:flex;             /* FLEXBOX */
+      align-items:center;
+      justify-content:center;
+      flex-wrap:wrap;           /* tags wrap */
+      gap:0.65rem;
+      padding:1.75rem 2.5rem;
+      max-width:1200px;margin:0 auto;
+      border-bottom:1px solid var(--border);
+      position:relative;z-index:1;
+    }
+    .ts-label{font-family:var(--font-m);font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-right:0.25rem}
+    .ts-tag{font-family:var(--font-m);font-size:0.65rem;padding:0.25rem 0.75rem;border:1px solid var(--border);border-radius:3px;color:var(--muted);letter-spacing:0.05em;transition:all 0.2s}
+    .ts-tag:hover{border-color:var(--sky);color:var(--sky);background:rgba(79,195,247,0.05)}
+
+    /* ── FOOTER ── FLEXBOX space-between */
+    footer{
+      display:flex;                     /* FLEXBOX */
+      flex-direction:row;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      gap:1rem;
+      padding:1.5rem 2.5rem;
+      border-top:1px solid var(--border);
+      font-family:var(--font-m);font-size:0.62rem;color:var(--muted);letter-spacing:0.1em;
+      position:relative;z-index:1;
+    }
+    .f-socials{display:flex;align-items:center;gap:1.25rem}
+    .f-socials a{color:var(--muted);text-decoration:none;font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;transition:color 0.2s}
+    .f-socials a:hover{color:var(--sky)}
+
+    /* ANIMATIONS */
+    @keyframes heroIn{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.85)}}
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:760px){
+      .nav-links{display:none;flex-direction:column;align-items:flex-start;gap:1rem;position:absolute;top:100%;left:0;right:0;background:rgba(5,8,15,0.97);backdrop-filter:blur(20px);padding:1.5rem 2.5rem;border-bottom:1px solid var(--border)}
+      .nav-links.open{display:flex}
+      .nav-toggle{display:flex}
+
+      /* KEY CHANGE: hero stacks to column */
+      .hero{
+        flex-direction:column;    /* ← stacks on mobile */
+        align-items:flex-start;
+        min-height:auto;
+        padding:3rem 1.5rem;
+        gap:2.5rem;
+      }
+      .hero-content{max-width:100%;order:2}
+      .hero-visual{order:1;width:100%}
+      .hero-btns{flex-wrap:wrap}
+      .btn-p,.btn-s{flex:1;justify-content:center;min-width:130px}
+      .stats{gap:1.25rem}
+
+      /* Features stack */
+      .features{flex-direction:column}
+      .feat{border-right:none;border-bottom:1px solid var(--border);padding:1.5rem}
+      .feat:last-child{border-bottom:none}
+
+      /* Footer stacks */
+      footer{flex-direction:column;align-items:center;text-align:center}
+    }
+
+    @media(max-width:400px){
+      nav{padding:1rem 1.25rem}
+      .hero{padding:2rem 1.25rem}
+      .hero-title{font-size:3rem}
+      .tech-strip{padding:1.5rem 1.25rem}
+    }
+  </style>
+</head>
+<body>
+<div class="orb1"></div>
+<div class="orb2"></div>
+
+<!-- NAVBAR — display:flex, justify-content:space-between -->
+<nav>
+  <div class="nav-brand">MA · Aerospace</div>
+  <button class="nav-toggle" id="navToggle"><span></span><span></span><span></span></button>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#hero">Home</a></li>
+    <li><a href="#features">Skills</a></li>
+    <li><a href="#tech">Tools</a></li>
+    <li><a href="mailto:mohdameen02021@gmail.com" class="nav-cta">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO — display:flex, flex-direction:row → column -->
+<section class="hero" id="hero">
+
+  <!-- LEFT — display:flex, flex-direction:column -->
+  <div class="hero-content">
+    <span class="badge">Open to Internships &amp; Jobs</span>
+
+    <h1 class="hero-title">
+      MOHD
+      <span class="outline">AMEEN</span>
+      <span class="sky">AERO</span>
+    </h1>
+
+    <p class="hero-desc">Aerospace Engineering student specialising in aerodynamics, CFD simulation, and propulsion systems. Partnered with Airbus and GE Aerospace — building the future of flight.</p>
+
+    <!-- Button row — display:flex, flex-direction:row -->
+    <div class="hero-btns">
+      <a href="https://linkedin.com/in/mohd-ameen-616834272" target="_blank" class="btn-p">View Profile →</a>
+      <a href="mailto:mohdameen02021@gmail.com" class="btn-s">Contact Me</a>
+    </div>
+
+    <!-- Stats — display:flex, flex-direction:row -->
+    <div class="stats">
+      <div class="stat"><div class="stat-n">8.9<span>+</span></div><div class="stat-l">CGPA</div></div>
+      <div class="stat-div"></div>
+      <div class="stat"><div class="stat-n">5<span>+</span></div><div class="stat-l">Experiences</div></div>
+      <div class="stat-div"></div>
+      <div class="stat"><div class="stat-n">4<span>+</span></div><div class="stat-l">Projects</div></div>
+      <div class="stat-div"></div>
+      <div class="stat"><div class="stat-n">5<span>+</span></div><div class="stat-l">Certs</div></div>
+    </div>
+  </div>
+
+  <!-- RIGHT — profile card -->
+  <div class="hero-visual">
+    <div class="vis-card">
+      <div class="vc-header">
+        <div class="vc-dots"><span></span><span></span><span></span></div>
+        <span class="vc-label">aerospace.profile</span>
+      </div>
+      <div class="vc-body">
+        <!-- Identity — display:flex -->
+        <div class="vc-id">
+          <div class="vc-av">MA</div>
+          <div>
+            <div class="vc-name">MOHD AMEEN</div>
+            <div class="vc-role">Aerospace Engineer · CFD Specialist</div>
+          </div>
+        </div>
+        <!-- Pills — display:flex, flex-wrap:wrap -->
+        <div class="vc-pills">
+          <span class="pill sky">CATIA V5</span>
+          <span class="pill sky">ANSYS</span>
+          <span class="pill amb">MATLAB</span>
+          <span class="pill sky">CFD</span>
+          <span class="pill amb">Aerodynamics</span>
+          <span class="pill sky">Propulsion</span>
+        </div>
+        <div class="vc-fact">
+          <span class="c-sky">college</span>: <span class="c-w">ACS Engineering</span><br/>
+          <span class="c-sky">cgpa</span>: <span class="c-amb">8.9</span><br/>
+          <span class="c-sky">partner</span>: <span class="c-w">"Airbus, GE Aerospace"</span><br/>
+          <span class="c-sky">available</span>: <span class="c-sky">true</span>
+        </div>
+        <div class="vc-status">
+          <div class="s-dot"></div>
+          Seeking internship/job · Bangalore
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- FEATURES — display:flex, flex-direction:row → column -->
+<div class="features" id="features">
+  <div class="feat">
+    <div class="feat-icon">🛩️</div>
+    <div class="feat-title">CFD & Aerodynamics</div>
+    <div class="feat-desc">ANSYS-based flow simulations, meshing, post-processing, and drag reduction analysis from real internship experience.</div>
+  </div>
+  <div class="feat">
+    <div class="feat-icon">🔧</div>
+    <div class="feat-title">CATIA V5 Expert</div>
+    <div class="feat-desc">Aerospace component modelling and bio-inspired structural design for morphing wings and composite structures.</div>
+  </div>
+  <div class="feat">
+    <div class="feat-icon">🚀</div>
+    <div class="feat-title">Propulsion Systems</div>
+    <div class="feat-desc">Bypass ratio analysis, energy source design, and engine performance simulation via GE Aerospace partnership.</div>
+  </div>
+  <div class="feat">
+    <div class="feat-icon">🌿</div>
+    <div class="feat-title">Bio-Inspired Research</div>
+    <div class="feat-desc">Butterfly scale aerodynamics, morphing wing structures, and onion peel composite materials for lightweight aerospace design.</div>
+  </div>
+</div>
+
+<!-- TECH STRIP — display:flex, flex-wrap:wrap -->
+<div class="tech-strip" id="tech">
+  <span class="ts-label">Tools →</span>
+  <span class="ts-tag">CATIA V5</span>
+  <span class="ts-tag">ANSYS</span>
+  <span class="ts-tag">MATLAB</span>
+  <span class="ts-tag">CFD</span>
+  <span class="ts-tag">Aerodynamics</span>
+  <span class="ts-tag">Propulsion</span>
+  <span class="ts-tag">Structures</span>
+  <span class="ts-tag">Composites</span>
+  <span class="ts-tag">Aircraft Design</span>
+  <span class="ts-tag">Supply Chain</span>
+</div>
+
+<!-- FOOTER — display:flex, justify-content:space-between -->
+<footer>
+  <span>© 2026 MOHD AMEEN</span>
+  <span>ASSIGNMENT 4 · RESPONSIVE HERO PAGE</span>
+  <div class="f-socials">
+    <a href="https://linkedin.com/in/mohd-ameen-616834272" target="_blank">LinkedIn</a>
+    <a href="mailto:mohdameen02021@gmail.com">Email</a>
+  </div>
+</footer>
+
+<script>
+  const toggle = document.getElementById('navToggle');
+  const links  = document.getElementById('navLinks');
+  toggle.addEventListener('click', () => links.classList.toggle('open'));
+  links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => links.classList.remove('open')));
+</script>
+</body>
+</html>
